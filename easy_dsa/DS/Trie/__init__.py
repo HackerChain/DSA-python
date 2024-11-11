@@ -23,6 +23,7 @@ class Trie:
             node = node.children[char]
         return node.is_end_of_word
 
+
     def starts_with(self, prefix: str) -> bool:
         node = self.root
         for char in prefix:
@@ -40,3 +41,4 @@ if __name__ == "__main__":
     print(trie.starts_with("app"))  # True
     trie.insert("app")
     print(trie.search("app"))       # True
+    
