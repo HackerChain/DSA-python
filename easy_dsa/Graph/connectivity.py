@@ -34,17 +34,15 @@ class Graph:
 def main():
     g = Graph()
     
-    # Test case 1: Connected graph
-    g.add_edge(0, 1)
-    g.add_edge(1, 2)
-    g.add_edge(2, 0)
-    print("Test case 1:", "Connected" if g.is_connected() else "Not connected")
+    # Reading from input file
+    with open('graph_input.txt', 'r') as file:
+        num_edges = int(file.readline().strip())
+        for _ in range(num_edges):
+            u, v = map(int, file.readline().strip().split())
+            g.add_edge(u, v)
     
-    # Test case 2: Disconnected graph
-    g2 = Graph()
-    g2.add_edge(0, 1)
-    g2.add_edge(2, 3)
-    print("Test case 2:", "Connected" if g2.is_connected() else "Not connected")
+    # Check and print connectivity
+    print("Graph is", "Connected" if g.is_connected() else "Not connected")
 
 if __name__ == "__main__":
     main()
