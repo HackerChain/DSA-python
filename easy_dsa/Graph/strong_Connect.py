@@ -1,72 +1,67 @@
+from collections import defaultdict
+
 class Graph:
-    def __init__(self, vertices):
-        self.V = vertices
-        self.graph = [[] for _ in range(vertices)]
+    def __init__(self):
+        self.graph = defaultdict(list)
         
     def add_edge(self, u, v):
         self.graph[u].append(v)
         
-    def get_transpose(self):
-        g_transpose = Graph(self.V)
-        for i in range(self.V):
-            for j in self.graph[i]:
-                g_transpose.add_edge(j, i)
-        return g_transpose
-    
-    def dfs_first(self, v, visited, stack):
-        visited[v] = True
-        for i in self.graph[v]:
-            if not visited[i]:
-                self.dfs_first(i, visited, stack)
-        stack.append(v)
-        
-    def dfs_second(self, v, visited):
-        visited[v] = True
-        print(v, end=' ')
-        for i in self.graph[v]:
-            if not visited[i]:
-                self.dfs_second(i, visited)
-    
-    def is_strongly_connected(self):
+    def find_scc(self):
+        # Step 1: Get vertices in order of finishing time
         stack = []
-        visited = [False] * self.V
+        visited = set()
         
-        for i in range(self.V):
-            if not visited[i]:
-                self.dfs_first(i, visited, stack)
+        for vertex in self.graph:
+            if vertex not in visited:
+                self._dfs(vertex, visited, stack)
         
-        g_transpose = self.get_transpose()
-        visited = [False] * self.V
+        # Step 2: Create reversed graph
+        reversed_graph = Graph()
+        for u in self.graph:
+            for v in self.graph[u]:
+                reversed_graph.add_edge(v, u)
         
+        # Step 3: Process vertices in order from stack
+        visited.clear()
+        components = []
         while stack:
-            i = stack.pop()
-            if not visited[i]:
-                g_transpose.dfs_second(i, visited)
-                print()
-                
-        return all(visited)
-
-def read_graph_from_file(filename):
-    with open(filename, 'r') as file:
-        # First line contains number of vertices
-        V = int(file.readline().strip())
-        graph = Graph(V)
+            vertex = stack.pop()
+            if vertex not in visited:
+                component = []
+                reversed_graph._collect_scc(vertex, visited, component)
+                components.append(component)
         
-        # Read edges
-        for line in file:
-            u, v = map(int, line.strip().split())
-            graph.add_edge(u, v)
+        return components
     
-    return graph
+    def _dfs(self, vertex, visited, stack):
+        visited.add(vertex)
+        for neighbor in self.graph[vertex]:
+            if neighbor not in visited:
+                self._dfs(neighbor, visited, stack)
+        stack.append(vertex)
+    
+    def _collect_scc(self, vertex, visited, component):
+        visited.add(vertex)
+        component.append(vertex)
+        for neighbor in self.graph[vertex]:
+            if neighbor not in visited:
+                self._collect_scc(neighbor, visited, component)
 
+# Example usage
 def main():
-    # Read graph from input file
-    graph = read_graph_from_file('input.txt')
+    # Read from file
+    g = Graph()
+    with open('input.txt', 'r') as f:
+        for line in f:
+            u, v = map(int, line.strip().split())
+            g.add_edge(u, v)
     
-    if graph.is_strongly_connected():
-        print("Graph is strongly connected")
-    else:
-        print("Graph is not strongly connected")
+    # Find and print SCCs
+    sccs = g.find_scc()
+    print("Strongly Connected Components:")
+    for i, scc in enumerate(sccs, 1):
+        print(f"Component {i}:", scc)
 
 if __name__ == "__main__":
     main()
