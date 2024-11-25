@@ -1,38 +1,49 @@
 import heapq
 
+def read_graph_from_file(filename):
+    graph = {}
+    with open(filename, 'r') as file:
+        for line in file:
+            # Split line into source, destination, and weight
+            source, dest, weight = line.strip().split()
+            weight = int(weight)
+            
+            # Initialize the source vertex dict if not exists
+            if source not in graph:
+                graph[source] = {}
+            # Initialize the destination vertex dict if not exists    
+            if dest not in graph:
+                graph[dest] = {}
+                
+            # Add edges (assuming undirected graph)
+            graph[source][dest] = weight
+            graph[dest][source] = weight
+            
+    return graph
+
 def dijkstra(graph, start):
-    # Initialize distances and priority queue
     distances = {vertex: float('infinity') for vertex in graph}
     distances[start] = 0
-    priority_queue = [(0, start)]  # (distance, vertex)
+    priority_queue = [(0, start)]
 
     while priority_queue:
         current_distance, current_vertex = heapq.heappop(priority_queue)
 
-        # Nodes can only get added once to the priority queue, so this check is necessary
         if current_distance > distances[current_vertex]:
             continue
 
         for neighbor, weight in graph[current_vertex].items():
             distance = current_distance + weight
 
-            # Only consider this new path if it's better
             if distance < distances[neighbor]:
                 distances[neighbor] = distance
                 heapq.heappush(priority_queue, (distance, neighbor))
 
     return distances
 
-# Example usage
 if __name__ == "__main__":
-    # Define a graph using a dictionary
-    graph = {
-        'A': {'B': 1, 'C': 4},
-        'B': {'A': 1, 'C': 2, 'D': 5},
-        'C': {'A': 4, 'B': 2, 'D': 1},
-        'D': {'B': 5, 'C': 1}
-    }
-
+    input_file = "graph.txt"
+    graph = read_graph_from_file(input_file)
     start_vertex = 'A'
     distances = dijkstra(graph, start_vertex)
     print(f"Distances from {start_vertex}: {distances}")
