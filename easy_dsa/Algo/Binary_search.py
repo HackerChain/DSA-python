@@ -1,28 +1,40 @@
-def binary_search(arr, target):
+def binary_search(collection, target):
+    # Convert input to list if it's a tuple or set
+    if isinstance(collection, (tuple, set)):
+        arr = sorted(list(collection))
+    elif isinstance(collection, list):
+        arr = sorted(collection)
+    else:
+        raise TypeError("Input must be a list, tuple, or set")
+
     left, right = 0, len(arr) - 1
 
     while left <= right:
-        mid = left + (right - left) // 2  # Calculate the middle index
+        mid = left + (right - left) // 2
 
-        # Check if the target is present at mid
         if arr[mid] == target:
-            return mid  # Target found, return the index
-        # If target is greater, ignore the left half
+            return mid
         elif arr[mid] < target:
             left = mid + 1
-        # If target is smaller, ignore the right half
         else:
             right = mid - 1
 
-    return -1  # Target not found
+    return -1
 
 # Example usage
 if __name__ == "__main__":
-    sorted_array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    target_value = 7
-    result = binary_search(sorted_array, target_value)
+    # List example
+    sorted_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    print("List search:", binary_search(sorted_list, 7))
 
-    if result != -1:
-        print(f"Element found at index: {result}")
-    else:
-        print("Element not found in the array.")
+    # Tuple example
+    number_tuple = (5, 2, 8, 1, 9, 3, 7)
+    print("Tuple search:", binary_search(number_tuple, 8))
+
+    # Set example
+    number_set = {4, 2, 7, 1, 9, 5}
+    print("Set search:", binary_search(number_set, 4))
+
+    # Unsorted list example
+    unsorted_list = [9, 3, 5, 1, 7, 2, 8]
+    print("Unsorted list search:", binary_search(unsorted_list, 5))
