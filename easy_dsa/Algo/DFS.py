@@ -3,13 +3,21 @@ class Graph:
         self.graph = {}
 
     def add_edge(self, u, v):
+        # Convert inputs to strings to handle different types uniformly
+        u = str(u)
+        v = str(v)
+        
         if u not in self.graph:
             self.graph[u] = []
         self.graph[u].append(v)
 
     def dfs(self, start, visited=None):
+        # Convert start vertex to string
+        start = str(start)
+        
         if visited is None:
             visited = set()
+            
         visited.add(start)
         print(start, end=' ')
         
@@ -17,13 +25,18 @@ class Graph:
             if neighbor not in visited:
                 self.dfs(neighbor, visited)
 
-# Example usage
+# Example usage with different input types
 g = Graph()
-g.add_edge(1, 2)
-g.add_edge(1, 3)
-g.add_edge(2, 4)
-g.add_edge(2, 5)
-g.add_edge(3, 6)
 
-print("DFS starting from vertex 1:")
+# Adding edges with mixed types
+g.add_edge('A', 'B')    # strings
+g.add_edge(1, 2)        # integers
+g.add_edge('C', 3)      # mixed types
+g.add_edge(2.5, 'D')    # float and string
+g.add_edge(True, False) # booleans
+
+print("DFS starting from vertex 'A':")
+g.dfs('A')
+
+print("\nDFS starting from vertex 1:")
 g.dfs(1)
